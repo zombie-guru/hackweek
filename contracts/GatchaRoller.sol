@@ -9,14 +9,28 @@ contract GatchaRoller {
     address public minter;
     mapping (address => uint) public balances;
     GatchaLoot private gatchaLoot;
+    // list of IDs that still haven't been won yet. 0 IDs have already been won.
+    uint[2] ownedGatchaLoot;
 
     // Constructor code is only run when the contract
     // is created
     constructor() {
         minter = msg.sender;
-        gatchaLoot = GatchaLoot(msg.sender);
-        gatchaLoot.mint(msg.sender, 0, 'https://my.url/0.png');
-        gatchaLoot.mint(msg.sender, 1, 'https://my.url/1.png');
+        gatchaLoot = new GatchaLoot();
+        ownedGatchaLoot[0] = 1;
+        gatchaLoot.mint(address(this), 1, 'https://my.url/0.png');
+        ownedGatchaLoot[1] = 2;
+        gatchaLoot.mint(address(this), 2, 'https://my.url/1.png');
+    }
+    
+    function ownerOf(
+        uint256 tokenId
+    )
+    external
+    view
+    returns (address)
+    {
+        return gatchaLoot.ownerOf(tokenId);
     }
 
     // Sends an amount of newly created coins to an address
@@ -35,10 +49,21 @@ contract GatchaRoller {
         uint8 rand = uint8(
             uint256(
                 keccak256(abi.encodePacked(block.timestamp, bHash, uint256(14)))
-            ) % 5
+            ) % 2
         );
         if (rand == 0) {
             // transfer ownership of the NFT
+            for (uint i=0; i<ownedGatchaLoot.length; i++) {
+                uint loot = ownedGatchaLoot[i];
+                if (loot == 0) {
+                    continue;
+                }
+                gatchaLoot.transferFrom(address(this), msg.sender, loot);
+                // mark as transfered
+                ownedGatchaLoot[i] = 0;
+                return;
+            }
+            // too bad, no loot left
         }
     }
 }
