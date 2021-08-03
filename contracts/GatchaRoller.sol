@@ -1,18 +1,22 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.7.0 <0.9.0;
 
+import "./GatchaLoot.sol";
+
 contract GatchaRoller {
     // The keyword "public" makes variables
     // accessible from other contracts
     address public minter;
     mapping (address => uint) public balances;
-    mapping (address => []string]) public nfts;
+    GatchaLoot private gatchaLoot;
 
     // Constructor code is only run when the contract
     // is created
-    constructor() public {
+    constructor() {
         minter = msg.sender;
-        // mint the NFTs and give them to "this"
+        gatchaLoot = GatchaLoot(msg.sender);
+        gatchaLoot.mint(msg.sender, 0, 'https://my.url/0.png');
+        gatchaLoot.mint(msg.sender, 1, 'https://my.url/1.png');
     }
 
     // Sends an amount of newly created coins to an address
@@ -24,14 +28,17 @@ contract GatchaRoller {
     }
     
     function roll() public {
-        require(balancers[receiver] > 1, "you must have at least 1 token");
-        balancers[receiver] -= 1;
-        
+        require(balances[msg.sender] > 1, "you must have at least 1 token");
+        balances[msg.sender] -= 1;
+
         bytes32 bHash = blockhash(block.number - 1);
-        uint8 roll = uint8(uint256(keccak256(abi.encodePacked(block.timestamp, bHash, uint256(14)))) % 5);
-        if (roll == 0) {
+        uint8 rand = uint8(
+            uint256(
+                keccak256(abi.encodePacked(block.timestamp, bHash, uint256(14)))
+            ) % 5
+        );
+        if (rand == 0) {
             // transfer ownership of the NFT
-            winners[msg.sender] += 1;
         }
     }
 }
