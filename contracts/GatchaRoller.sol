@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.5.6;
 
 import "./GatchaLoot.sol";
 
@@ -19,7 +19,7 @@ contract GatchaRoller {
 
     // Constructor code is only run when the contract
     // is created
-    constructor() {
+    constructor() public {
         minter = msg.sender;
         gatchaLoot = new GatchaLoot();
         numberOfIds = 2;
@@ -43,7 +43,7 @@ contract GatchaRoller {
     }
 
     // associate a Twitch user with this address
-    function associateTwitchUser(string calldata userName) public {
+    function associateTwitchUser(string memory userName) public {
         addressToTwitchUser[msg.sender] = userName;
     }
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.0;
+pragma solidity 0.5.6;
 
-import "https://github.com/0xcert/ethereum-erc721/src/contracts/tokens/nf-token-metadata.sol";
-import "https://github.com/0xcert/ethereum-erc721/src/contracts/ownership/ownable.sol";
+import "@0xcert/ethereum-erc721/src/contracts/tokens/nf-token-metadata.sol";
+import "@0xcert/ethereum-erc721/src/contracts/ownership/ownable.sol";
 
 /**
  * @dev This is an example contract implementation of NFToken with metadata extension.
@@ -15,7 +15,7 @@ contract GatchaLoot is
   /**
    * @dev Contract constructor. Sets metadata extension `name` and `symbol`.
    */
-  constructor()
+  constructor() public
   {
     nftName = "Twitch Gatcha Loot";
     nftSymbol = "TWIT";
