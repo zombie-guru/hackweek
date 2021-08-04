@@ -8,29 +8,43 @@ contract GatchaRoller {
     // accessible from other contracts
     address public minter;
     mapping (address => uint) public balances;
-    GatchaLoot private gatchaLoot;
-    // list of IDs that still haven't been won yet. 0 IDs have already been won.
-    uint[2] ownedGatchaLoot;
+    GatchaLoot public gatchaLoot;
+
+    // nfts already transfered.
+    mapping (uint => bool) public nftsTransfered;
+    // number of available ids
+    uint numberOfIds;
+    // addresses and the twitch users they belong to
+    mapping (address => string) public addressToTwitchUser;
 
     // Constructor code is only run when the contract
     // is created
     constructor() {
         minter = msg.sender;
         gatchaLoot = new GatchaLoot();
-        ownedGatchaLoot[0] = 1;
-        gatchaLoot.mint(address(this), 1, 'https://my.url/0.png');
-        ownedGatchaLoot[1] = 2;
-        gatchaLoot.mint(address(this), 2, 'https://my.url/1.png');
+        numberOfIds = 2;
+        gatchaLoot.mint(address(this), 0, 'https://my.url/0.png');
+        gatchaLoot.mint(address(this), 1, 'https://my.url/1.png');
     }
-    
-    function ownerOf(
+
+    // get the twitch owner of an NFT
+    function twitchOwnerOf(
         uint256 tokenId
     )
     external
     view
-    returns (address)
+    returns (string memory)
     {
-        return gatchaLoot.ownerOf(tokenId);
+        address owner = gatchaLoot.ownerOf(tokenId);
+        if (owner == minter) {
+            return "";
+        }
+        return addressToTwitchUser[owner];
+    }
+
+    // associate a Twitch user with this address
+    function associateTwitchUser(string calldata userName) public {
+        addressToTwitchUser[msg.sender] = userName;
     }
 
     // Sends an amount of newly created coins to an address
@@ -40,7 +54,8 @@ contract GatchaRoller {
         require(amount < 1e60);
         balances[receiver] += amount;
     }
-    
+
+    // send a roll token to roll for an NFT
     function roll() public {
         require(balances[msg.sender] > 1, "you must have at least 1 token");
         balances[msg.sender] -= 1;
@@ -53,14 +68,13 @@ contract GatchaRoller {
         );
         if (rand == 0) {
             // transfer ownership of the NFT
-            for (uint i=0; i<ownedGatchaLoot.length; i++) {
-                uint loot = ownedGatchaLoot[i];
-                if (loot == 0) {
+            for (uint i=0; i<numberOfIds; i++) {
+                if (nftsTransfered[i]) {
                     continue;
                 }
-                gatchaLoot.transferFrom(address(this), msg.sender, loot);
+                gatchaLoot.transferFrom(address(this), msg.sender, i);
                 // mark as transfered
-                ownedGatchaLoot[i] = 0;
+                nftsTransfered[i] = true;
                 return;
             }
             // too bad, no loot left
