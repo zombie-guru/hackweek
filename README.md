@@ -1,5 +1,11 @@
 # hackweek
 
-## Quick Actions
+## Developer Setup
 
-To run truffle, type `npx truffle`.
+To deploy the contract, run the following:
+
+```bash
+npx truffle deploy
+```
+
+Next, use `./build/contracts/GatchaRoller.json` in your drizzle contracts.
