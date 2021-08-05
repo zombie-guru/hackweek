@@ -7,15 +7,17 @@ contract GatchaRoller {
     // The keyword "public" makes variables
     // accessible from other contracts
     address public minter;
-    mapping (address => uint) public balances;
+    mapping(address => uint256) public balances;
     GatchaLoot public gatchaLoot;
 
     // nfts already transfered.
-    mapping (uint => bool) public nftsTransfered;
+    mapping(uint256 => bool) public nftsTransfered;
     // number of available ids
-    uint numberOfIds;
+    uint256 numberOfIds;
     // addresses and the twitch users they belong to
-    mapping (address => string) public addressToTwitchUser;
+    mapping(address => string) public addressToTwitchUser;
+
+    event GatchaWin(address winner, uint256 id);
 
     // Constructor code is only run when the contract
     // is created
@@ -23,23 +25,26 @@ contract GatchaRoller {
         minter = msg.sender;
         gatchaLoot = new GatchaLoot();
         numberOfIds = 2;
-        gatchaLoot.mint(address(this), 0, 'https://my.url/0.png');
-        gatchaLoot.mint(address(this), 1, 'https://my.url/1.png');
+        gatchaLoot.mint(address(this), 0, "https://my.url/0.png");
+        gatchaLoot.mint(address(this), 1, "https://my.url/1.png");
     }
 
     // get the twitch owner of an NFT
-    function twitchOwnerOf(
-        uint256 tokenId
-    )
-    external
-    view
-    returns (string memory)
+    function twitchOwnerOf(uint256 tokenId)
+        external
+        view
+        returns (string memory)
     {
         address owner = gatchaLoot.ownerOf(tokenId);
-        if (owner == minter) {
-            return "";
-        }
         return addressToTwitchUser[owner];
+    }
+
+    function getTokenUri(uint256 tokenId)
+        external
+        view
+        returns (string memory)
+    {
+        return gatchaLoot.tokenURI(tokenId);
     }
 
     // associate a Twitch user with this address
@@ -49,7 +54,7 @@ contract GatchaRoller {
 
     // Sends an amount of newly created coins to an address
     // Can only be called by the contract creator
-    function vendRollToken(address receiver, uint amount) public {
+    function vendRollToken(address receiver, uint256 amount) public {
         require(msg.sender == minter);
         require(amount < 1e60);
         balances[receiver] += amount;
@@ -64,17 +69,18 @@ contract GatchaRoller {
         uint8 rand = uint8(
             uint256(
                 keccak256(abi.encodePacked(block.timestamp, bHash, uint256(14)))
-            ) % 2
+            ) % 1
         );
         if (rand == 0) {
             // transfer ownership of the NFT
-            for (uint i=0; i<numberOfIds; i++) {
+            for (uint256 i = 0; i < numberOfIds; i++) {
                 if (nftsTransfered[i]) {
                     continue;
                 }
                 gatchaLoot.transferFrom(address(this), msg.sender, i);
                 // mark as transfered
                 nftsTransfered[i] = true;
+                emit GatchaWin(msg.sender, i);
                 return;
             }
             // too bad, no loot left
