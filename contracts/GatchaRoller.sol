@@ -24,9 +24,62 @@ contract GatchaRoller {
     constructor() public {
         minter = msg.sender;
         gatchaLoot = new GatchaLoot();
-        numberOfIds = 2;
-        gatchaLoot.mint(address(this), 0, "https://my.url/0.png");
-        gatchaLoot.mint(address(this), 1, "https://my.url/1.png");
+        numberOfIds = 11;
+        gatchaLoot.mint(
+            address(this),
+            0,
+            "https://d225uztlf78d4e.cloudfront.net/anselnft1.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            1,
+            "https://d225uztlf78d4e.cloudfront.net/bachnft1.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            2,
+            "https://d225uztlf78d4e.cloudfront.net/catnft1.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            3,
+            "https://d225uztlf78d4e.cloudfront.net/catnft2.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            4,
+            "https://d225uztlf78d4e.cloudfront.net/dognft1.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            5,
+            "https://d225uztlf78d4e.cloudfront.net/dognft2.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            6,
+            "https://d225uztlf78d4e.cloudfront.net/dognft3.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            7,
+            "https://d225uztlf78d4e.cloudfront.net/emmettnft2.jpg"
+        );
+        gatchaLoot.mint(
+            address(this),
+            8,
+            "https://d225uztlf78d4e.cloudfront.net/emmettslacknft.png"
+        );
+        gatchaLoot.mint(
+            address(this),
+            9,
+            "https://d225uztlf78d4e.cloudfront.net/mattnft1.jpg"
+        );
+        gatchaLoot.mint(
+            address(this),
+            10,
+            "https://d225uztlf78d4e.cloudfront.net/tomnft5.jpg"
+        );
     }
 
     // get the twitch owner of an NFT
